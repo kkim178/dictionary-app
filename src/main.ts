@@ -30,41 +30,52 @@ interface DictionaryAPIResponse {
 
 const dictionaryAPI = "https://api.dictionaryapi.dev/api/v2/entries/en_US/";
 
-const searchWord = async (word) => {
+// Fetch data from the API
+const searchWord = async (word: string): Promise<DictionaryAPIResponse[]> => {
   const response = await fetch(`${dictionaryAPI}${word}`);
   if (!response.ok) {
     throw new Error(`Word not found (status ${response.status})`);
   }
-  return response.json();
+  const data: DictionaryAPIResponse[] = await response.json();
+  return data;
 };
 
-const extractFromEntry = (data, key) => {
-  if (data && Array.isArray(data)) {
-    return data[0][key];
-  }
+const extractFromEntry = <K extends keyof DictionaryAPIResponse>(
+  data: DictionaryAPIResponse[] | undefined,
+  key: K,
+): DictionaryAPIResponse[K] | undefined => {
+  return data?.[0]?.[key] ?? undefined;
 };
 
-const clearDefinitionsSection = () => {
-  const definitionsSection = document.getElementById("definitions");
+// Helper to clear the definitions section
+const clearDefinitionsSection = (): HTMLElement => {
+  const definitionsSection = document.getElementById(
+    "definitions",
+  ) as HTMLElement;
   definitionsSection.innerHTML = "";
   return definitionsSection;
 };
 
-const createDefinitionsHeading = () => {
-  const definitionsHeading = document.createElement("h1");
+
+// Helper to create the definitions heading
+const createDefinitionsHeading = (): HTMLElement => {
+  const definitionsHeading: HTMLElement = document.createElement("h1");
   definitionsHeading.classList.add("text-2xl", "font-semibold");
   definitionsHeading.innerText = "Definitions";
   return definitionsHeading;
 };
 
-const createDefinitionDiv = () => {
+
+// Helper to create the definition div
+const createDefinitionDiv = (): HTMLElement => {
   const definitionDiv = document.createElement("div");
   definitionDiv.classList.add("bg-sky-50");
   return definitionDiv;
 };
 
-const createPartOfSpeechElement = (partOfSpeech) => {
-  const partOfSpeechName = document.createElement("p");
+// Helper to create the part of speech element
+const createPartOfSpeechElement = (partOfSpeech: string): HTMLElement => {
+  const partOfSpeechName: HTMLElement = document.createElement("p");
   partOfSpeechName.classList.add(
     "px-4",
     "py-2",
@@ -76,8 +87,10 @@ const createPartOfSpeechElement = (partOfSpeech) => {
   return partOfSpeechName;
 };
 
-const createDefinitionsList = () => {
-  const definitionsList = document.createElement("ul");
+
+// Helper to create the definitions list
+const createDefinitionsList = (): HTMLElement => {
+  const definitionsList: HTMLElement = document.createElement("ul");
   definitionsList.classList.add(
     "p-2",
     "ml-6",
@@ -88,34 +101,41 @@ const createDefinitionsList = () => {
   return definitionsList;
 };
 
-const createDefinitionItem = (definitionObj) => {
-  const definitionsItem = document.createElement("li");
+
+// Helper to create the definition item
+const createDefinitionItem = (definitionObj: Definition): HTMLElement => {
+  const definitionsItem: HTMLElement = document.createElement("li");
   definitionsItem.innerText = definitionObj.definition;
   return definitionsItem;
 };
 
-const displayWordDefinition = (meanings) => {
-  const definitionsSection = clearDefinitionsSection();
 
-  const definitionsHeading = createDefinitionsHeading();
+// Display the word definitions
+const displayWordDefinition = (meanings: Meaning[] | undefined): void => {
+  const definitionsSection: HTMLElement = clearDefinitionsSection();
+
+  const definitionsHeading: HTMLElement = createDefinitionsHeading();
   definitionsSection.appendChild(definitionsHeading);
 
-  meanings.forEach((meaning) => {
-    const definitionDiv = createDefinitionDiv();
+  meanings?.forEach((meaning: Meaning) => {
+    const definitionDiv: HTMLElement = createDefinitionDiv();
     definitionsSection.appendChild(definitionDiv);
 
     const { partOfSpeech, definitions } = meaning;
 
-    const partOfSpeechName = createPartOfSpeechElement(partOfSpeech);
+    const partOfSpeechName: HTMLElement =
+      createPartOfSpeechElement(partOfSpeech);
     definitionDiv.appendChild(partOfSpeechName);
 
-    const definitionsList = createDefinitionsList();
+    const definitionsList: HTMLElement = createDefinitionsList();
     definitionDiv.appendChild(definitionsList);
 
-    const definitionListItems = definitions.map(createDefinitionItem);
+    const definitionListItems: HTMLElement[] =
+      definitions.map(createDefinitionItem);
     definitionsList.append(...definitionListItems);
   });
 };
+
 
 const createPhoneticsSection = () => {
   const phoneticsSection = document.getElementById("phonetics");
