@@ -1,25 +1,30 @@
 import "./style.css";
-type Definition = {
+
+interface Definition {
   definition: string;
   example?: string;
   synonyms?: string[];
   antonyms?: string[];
-};
-type Meaning = {
+}
+
+interface Meaning {
   partOfSpeech: string;
   definitions: Definition[];
-};
-type Phonetic = {
+}
+
+interface Phonetic {
   text?: string;
   audio?: string;
-};
-type DictionaryAPIResponse = {
+}
+
+interface DictionaryAPIResponse {
   word: string;
   phonetic?: string;
   phonetics: Phonetic[];
   origin?: string;
   meanings: Meaning[];
-};
+}
+
 
 
 
